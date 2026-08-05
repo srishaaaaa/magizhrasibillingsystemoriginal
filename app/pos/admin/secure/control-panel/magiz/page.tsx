@@ -394,32 +394,19 @@ export default function POSBilling() {
       const { data: productsData } = await supabase
         .from("products")
         .select("*");
-      const defaultCategories = [
-        "Shirts", "T-Shirts", "Pants", "Jeans", "Shorts", "Track Pants", "Joggers", 
-        "Hoodies", "Sweatshirts", "Jackets", "Blazers", "Innerwear", "Vests", "Socks", 
-        "Belts", "Wallets", "Caps", "Shoes", "Sandals", "Slippers", "Sunglasses", 
-        "Watches", "Handkerchiefs", "Ties", "Perfumes", "Bags"
-      ].map((name, index) => ({
-        id: `default-${index}`,
-        name,
-        desc: "Standard Category",
-        price: 0
-      }));
 
       if (productsData) {
-        setCatalog([
-          ...defaultCategories,
-          ...productsData.map((p) => ({
+        setCatalog(
+          productsData.map((p) => ({
             id: p.id,
             name: p.name,
             desc: p.description,
             price: p.default_price || undefined,
           }))
-        ]);
+        );
       } else {
-        setCatalog(defaultCategories);
+        setCatalog([]);
       }
-
       const { data: ordersData } = await supabase
         .from("orders")
         .select(
