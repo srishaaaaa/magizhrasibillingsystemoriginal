@@ -623,6 +623,10 @@ export default function POSBilling() {
   };
 
   const deleteFromCatalog = async (id: string) => {
+    if (id.startsWith("default-")) {
+      alert("This is a built-in category and can't be deleted.");
+      return;
+    }
     const { error } = await supabase
       .from("products")
       .delete()
@@ -1816,18 +1820,20 @@ export default function POSBilling() {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                               </svg>
                                             </button>
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (window.confirm("Are you sure you want to delete this item from the catalog?")) {
-                                                  deleteFromCatalog(catItem.id);
-                                                }
-                                              }}
-                                              className="px-2 py-2.5 text-text-on-light font-bold hover:text-[#FF0000] transition-colors cursor-pointer"
-                                              title="Delete item"
-                                            >
-                                              <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            {!catItem.id.startsWith("default-") && (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  if (window.confirm("Are you sure you want to delete this item from the catalog?")) {
+                                                    deleteFromCatalog(catItem.id);
+                                                  }
+                                                }}
+                                                className="px-2 py-2.5 text-text-on-light font-bold hover:text-[#FF0000] transition-colors cursor-pointer"
+                                                title="Delete item"
+                                              >
+                                                <Trash2 className="w-4 h-4" />
+                                              </button>
+                                            )}
                                           </div>
                                         </div>
                                       ))
