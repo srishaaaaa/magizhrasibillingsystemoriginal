@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import POSBilling from "@/app/pos/admin/secure/control-panel/magizhrasi/page";
 
 export default function Home() {
-  redirect("/pos/admin/secure/control-panel/Magizhrasi");
+  return <POSBilling />;
 }

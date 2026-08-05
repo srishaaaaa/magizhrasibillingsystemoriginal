@@ -6,7 +6,7 @@ A modern, responsive Point of Sale (POS) and billing system built for **Magizhra
 
 ## 🚀 Features
 
-- **Interactive POS Interface**: Full-featured billing dashboard at `/pos/admin/secure/control-panel/aarika-looms` to add items, search the catalog, apply discounts, select order source (Online/Offline), and complete payments.
+- **Interactive POS Interface**: Full-featured billing dashboard at `/pos/admin/secure/control-panel/` to add items, search the catalog, apply discounts, select order source (Online/Offline), and complete payments.
 - **Dynamic Digital Invoices**: Beautiful printable billing invoices at `/invoice/[id]` with print optimization (PDF layout support), customer receipt copy links, and a professional look.
 - **Brand Landing Page**: Simple, elegant public-facing page showcasing business directory details, address, business hours, and contacts.
 - **Database Integration**: Fully powered by Supabase for real-time order saving, inventory lookup, and customer profiles.
@@ -26,7 +26,7 @@ A modern, responsive Point of Sale (POS) and billing system built for **Magizhra
 ## 📂 Project Structure
 
 ```
-aarika-looms-main/
+magizhrasi-main/
 ├── app/
 │   ├── globals.css                # Global Tailwind CSS styles and custom variable theme declarations
 │   ├── layout.tsx                 # Root application wrapper with font styling
@@ -39,7 +39,7 @@ aarika-looms-main/
 │       └── admin/
 │           └── secure/
 │               └── control-panel/
-│                   └── aarika-looms/
+│                   └── magizhrasi/
 │                       └── page.tsx # The main POS Dashboard & billing console
 ├── lib/
 │   └── supabase.ts                # Configured client connection for Supabase database
@@ -53,7 +53,7 @@ aarika-looms-main/
 
 ## ⚙️ Configuration & Environment Setup
 
-Create a `.env.local` file in the root directory (under `aarika-looms-main/`) and populate the following keys:
+Create a `.env.local` file in the root directory (under `magizhrasi-main/`) and populate the following keys:
 
 ```ini
 # Supabase Configuration
@@ -93,7 +93,7 @@ POWERED_BY_URL=https://www.cenexasystems.com/
 
 ### 1. Install Dependencies
 
-First, ensure that you are in the application root directory (`aarika-looms-main`), then run:
+First, ensure that you are in the application root directory (`magizhrasi-main`), then run:
 
 ```bash
 npm install
@@ -110,7 +110,7 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the public landing page.
 
 - Public Landing: [http://localhost:3000/](http://localhost:3000/)
-- POS Terminal: [http://localhost:3000/pos/admin/secure/control-panel/aarika-looms](http://localhost:3000/pos/admin/secure/control-panel/aarika-looms)
+- POS Terminal: [http://localhost:3000/magizhrasi](http://localhost:3000/magizhrasi)
 - Invoices: `/invoice/[id]` (e.g., [http://localhost:3000/invoice/example-id](http://localhost:3000/invoice/example-id))
 
 ### 3. Build for Production

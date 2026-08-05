@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -316,46 +315,6 @@ export default function POSBilling() {
   const [productSearchQuery, setProductSearchQuery] = useState("");
   const [couponSearchQuery, setCouponSearchQuery] = useState("");
 
-  // Modal State
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [showCatalogModal, setShowCatalogModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<CompletedOrder | null>(
-    null,
-  );
-  const [viewingOrder, setViewingOrder] = useState<CompletedOrder | null>(null);
-  const [activeInvoiceId, setActiveInvoiceId] = useState<string | null>(null);
-  const [newCatName, setNewCatName] = useState("");
-  const [newCatDesc, setNewCatDesc] = useState("");
-  const [newCatPrice, setNewCatPrice] = useState<number | "">("");
-  const [editCatalogItemId, setEditCatalogItemId] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [activeCatalogRowId, setActiveCatalogRowId] = useState<string | null>(
-    null,
-  );
-  const [catalogSearch, setCatalogSearch] = useState("");
-  const [catalogTargetRowId, setCatalogTargetRowId] = useState<string | null>(
-    null,
-  );
-
-  // Order search/filters state
-  const [orderSearchId, setOrderSearchId] = useState("");
-  const [orderSearchName, setOrderSearchName] = useState("");
-  const [orderSearchPhone, setOrderSearchPhone] = useState("");
-  const [orderFilterSource, setOrderFilterSource] = useState("ALL");
-  const [orderFilterStatus, setOrderFilterStatus] = useState("ALL");
-  const [historyPeriod, setHistoryPeriod] = useState<
-    "all" | "today" | "week" | "month" | "year" | "custom"
-  >("all");
-  const [historyStartDate, setHistoryStartDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
-  );
-  const [historyEndDate, setHistoryEndDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
-  );
-
-  const [selectedCoupon, setSelectedCoupon] = useState<string>("none");
-
   useEffect(() => {
     const auth =
       sessionStorage.getItem("pos_authorized") ||
@@ -473,6 +432,46 @@ export default function POSBilling() {
       setIsSidebarOpen(false);
     }
   }, []);
+
+  // Modal State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showCatalogModal, setShowCatalogModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<CompletedOrder | null>(
+    null,
+  );
+  const [viewingOrder, setViewingOrder] = useState<CompletedOrder | null>(null);
+  const [activeInvoiceId, setActiveInvoiceId] = useState<string | null>(null);
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatDesc, setNewCatDesc] = useState("");
+  const [newCatPrice, setNewCatPrice] = useState<number | "">("");
+  const [editCatalogItemId, setEditCatalogItemId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [activeCatalogRowId, setActiveCatalogRowId] = useState<string | null>(
+    null,
+  );
+  const [catalogSearch, setCatalogSearch] = useState("");
+  const [catalogTargetRowId, setCatalogTargetRowId] = useState<string | null>(
+    null,
+  );
+
+  // Order search/filters state
+  const [orderSearchId, setOrderSearchId] = useState("");
+  const [orderSearchName, setOrderSearchName] = useState("");
+  const [orderSearchPhone, setOrderSearchPhone] = useState("");
+  const [orderFilterSource, setOrderFilterSource] = useState("ALL");
+  const [orderFilterStatus, setOrderFilterStatus] = useState("ALL");
+  const [historyPeriod, setHistoryPeriod] = useState<
+    "all" | "today" | "week" | "month" | "year" | "custom"
+  >("all");
+  const [historyStartDate, setHistoryStartDate] = useState<string>(
+    new Date().toISOString().split("T")[0],
+  );
+  const [historyEndDate, setHistoryEndDate] = useState<string>(
+    new Date().toISOString().split("T")[0],
+  );
+
+  const [selectedCoupon, setSelectedCoupon] = useState<string>("none");
   const coupons = [
     { code: "none", label: "No Coupon", type: "fixed", value: 0 },
     {
