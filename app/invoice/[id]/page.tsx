@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import { supabase } from "@/lib/supabase";
 import { ShoppingBag, MapPin, Phone, Printer, Copy, Check, Home, Building2 } from "lucide-react";
 import Link from "next/link";
 
-export default function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
+export default function InvoicePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ print?: string }> }) {
   const { id } = use(params);
+  const { print } = use(searchParams);
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const hasAutoPrinted = useRef(false);
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
@@ -43,6 +45,14 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
 
     fetchOrder();
   }, [id]);
+
+  useEffect(() => {
+    if (!loading && order && print === "1" && !hasAutoPrinted.current) {
+      hasAutoPrinted.current = true;
+      const timer = setTimeout(() => window.print(), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, order, print]);
 
   if (loading) {
     return (

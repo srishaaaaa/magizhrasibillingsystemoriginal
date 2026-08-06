@@ -31,6 +31,7 @@ import {
   Eye,
   EyeOff,
   Printer,
+  Check,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { verifyPasscode } from "@/app/pos/actions";
@@ -67,6 +68,132 @@ type CompletedOrder = {
   status: "Completed" | "Pending";
 };
 
+// Normalizes Unicode composition (NFC) before lowercasing so that Tamil (and other
+// Indic-script) text typed via different keyboards/IMEs — which can encode the same
+// visible characters using different underlying code point sequences — still matches
+// during search.
+const normalizeForSearch = (value: string | null | undefined): string =>
+  (value || "").normalize("NFC").toLowerCase();
+
+const BillGeneratedPanel = ({
+  order,
+  onNewSale,
+  onWhatsApp,
+  onPrint,
+}: {
+  order: CompletedOrder;
+  onNewSale: () => void;
+  onWhatsApp: () => void;
+  onPrint: () => void;
+}) => {
+  const balanceReturned = Math.max(0, order.cashReceived - order.grandTotal);
+  const displayItems = order.items.filter((i) => !i.name?.startsWith("GST ("));
+
+  return (
+    <div className="flex-1 flex flex-col gap-6 max-w-2xl min-w-0 mx-auto w-full animate-in fade-in duration-300">
+      {/* Header */}
+      <div className="flex flex-wrap justify-between items-center gap-3 py-2 border-b border-black/10 w-full">
+        <div className="flex items-center gap-4">
+          <span className="w-1.5 h-8 bg-gold rounded-full"></span>
+          <div>
+            <h2 className="text-xl font-black text-text-on-light font-bold tracking-tight">
+              Bill Generated
+            </h2>
+            <p className="text-[11px] text-text-on-light font-bold font-semibold mt-0.5">
+              #{order.id}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onNewSale}
+          className="flex items-center gap-2 bg-bg-dark hover:bg-black text-gold px-4 py-2.5 rounded-lg font-bold text-[10px] uppercase tracking-[0.1em] transition-colors cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          New Sale
+        </button>
+      </div>
+
+      {/* Payment Receipt Card */}
+      <div className="bg-[#FFFFFF]/60 border border-black/10 rounded-2xl p-5 sm:p-6 space-y-4">
+        <p className="text-[9px] font-bold text-text-on-light font-bold/50 uppercase tracking-wider">
+          Payment Receipt
+        </p>
+
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-bold text-text-on-light font-bold">Grand Total</span>
+          <span className="text-lg font-black text-text-on-light font-bold">
+            ₹{order.grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-bold text-text-on-light font-bold">Amount Received</span>
+          <span className="text-lg font-black text-text-on-light font-bold">
+            ₹{order.cashReceived.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center bg-gold/10 border border-gold/30 rounded-xl px-4 py-3">
+          <span className="text-xs font-bold text-gold-dark uppercase tracking-wider">
+            {order.cashReceived >= order.grandTotal ? "Balance Returned" : "Balance Due"}
+          </span>
+          <span className="text-xl font-black text-gold-dark">
+            ₹
+            {(order.cashReceived >= order.grandTotal
+              ? balanceReturned
+              : order.grandTotal - order.cashReceived
+            ).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button
+          onClick={onPrint}
+          className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#FFFFFF]/60 hover:bg-white border border-black/10 text-text-on-light font-bold rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+        >
+          <Printer className="w-3.5 h-3.5" />
+          Print Receipt
+        </button>
+        <button
+          onClick={onWhatsApp}
+          className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-[0_4px_14px_rgba(16,185,129,0.4)]"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.012c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" /></svg>
+          WhatsApp Invoice
+        </button>
+        <button
+          onClick={onNewSale}
+          className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg-dark hover:bg-black text-gold rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          New Sale
+        </button>
+      </div>
+
+      {/* Items Sold */}
+      <div className="bg-[#FFFFFF]/60 border border-black/10 rounded-2xl p-5 sm:p-6">
+        <p className="text-[9px] font-bold text-text-on-light font-bold/50 uppercase tracking-wider mb-3">
+          Items Sold
+        </p>
+        <div className="divide-y divide-black/5">
+          {displayItems.map((item, idx) => (
+            <div key={idx} className="flex justify-between items-center py-2.5 gap-3">
+              <span className="text-xs font-semibold text-text-on-light font-bold">
+                {item.name} <span className="text-text-on-light font-bold/50">× {item.qty}</span>
+              </span>
+              <span className="text-xs font-black text-text-on-light font-bold shrink-0">
+                ₹{(item.price * item.qty).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SearchableItemInput = ({
   item,
   catalog,
@@ -97,8 +224,8 @@ const SearchableItemInput = ({
 
   const filteredCatalog = catalog.filter(
     (c) =>
-      c.name.toLowerCase().includes(internalSearch.toLowerCase()) ||
-      (c.desc && c.desc.toLowerCase().includes(internalSearch.toLowerCase())),
+      normalizeForSearch(c.name).includes(normalizeForSearch(internalSearch)) ||
+      normalizeForSearch(c.desc).includes(normalizeForSearch(internalSearch)),
   );
 
   useEffect(() => {
@@ -323,6 +450,7 @@ export default function POSBilling() {
     null,
   );
   const [viewingOrder, setViewingOrder] = useState<CompletedOrder | null>(null);
+  const [completedOrder, setCompletedOrder] = useState<CompletedOrder | null>(null);
   const [activeInvoiceId, setActiveInvoiceId] = useState<string | null>(null);
   const [newCatName, setNewCatName] = useState("");
   const [newCatDesc, setNewCatDesc] = useState("");
@@ -645,7 +773,7 @@ export default function POSBilling() {
   const gstAmount = applyGST ? discountedSubtotal * (gstPercentage / 100) : 0;
   const grandTotal = discountedSubtotal + deliveryFee + gstAmount;
 
-  const handleSendWhatsApp = async (appType: 'personal' | 'business' = 'personal') => {
+  const handleCompleteSale = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
@@ -745,41 +873,6 @@ export default function POSBilling() {
       console.error("Order save failed:", orderErr.message);
     }
 
-    const domain = window.location.origin;
-    const invoiceUrl = `${domain}/invoice/${newOrderId}`;
-
-    const shopEmoji = String.fromCodePoint(0x2728);
-    const checkEmoji = String.fromCodePoint(0x2705);
-    const tagEmoji = String.fromCodePoint(0x1F516);
-    const moneyEmoji = String.fromCodePoint(0x1F4B0);
-    const receiptEmoji = String.fromCodePoint(0x1F4E6);
-
-    let message = `${shopEmoji} *Magizhrasi* ${shopEmoji}\n\n`;
-    message += `${checkEmoji} Thank you for shopping with us!\n\n`;
-    
-    message += `*Subtotal:* ₹${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
-    
-    if (calculatedDiscount > 0) {
-      message += `*Discount Applied:* -₹${calculatedDiscount.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
-    }
-    
-    if (applyGST && gstAmount > 0) {
-      message += `*GST (${gstPercentage}%):* ₹${gstAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n`;
-    }
-    
-    message += `\n${moneyEmoji} *Total Amount:* ₹${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}\n\n`;
-    message += `${receiptEmoji} View and download your detailed digital receipt here:\n${invoiceUrl}`;
-
-    const encodedMessage = encodeURIComponent(message);
-    let whatsappUrl = `https://api.whatsapp.com/send/?phone=91${customerPhone}&text=${encodedMessage}`;
-
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      window.location.href = whatsappUrl;
-    } else {
-      window.open(whatsappUrl, "_blank");
-    }
-
     const newOrder: CompletedOrder = {
       id: newOrderId,
       customerName: customerName || "Guest",
@@ -801,6 +894,7 @@ export default function POSBilling() {
     };
 
     setOrders((prev) => [newOrder, ...prev]);
+    setCompletedOrder(newOrder);
 
     // Reset Form
     setCustomerName("");
@@ -812,6 +906,10 @@ export default function POSBilling() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleNewSale = () => {
+    setCompletedOrder(null);
   };
 
   // Real-time analytics derived from orders with period filtering
@@ -1583,7 +1681,14 @@ export default function POSBilling() {
           )}
         </header>
 
-        {activeTab === "billing" && (
+        {activeTab === "billing" && (completedOrder ? (
+          <BillGeneratedPanel
+            order={completedOrder}
+            onNewSale={handleNewSale}
+            onWhatsApp={() => resendWhatsApp(completedOrder)}
+            onPrint={() => window.open(`/invoice/${completedOrder.id}?print=1`, "_blank")}
+          />
+        ) : (
           <div className="flex-1 flex flex-col gap-6 max-w-[1400px] min-w-0 mx-auto w-full">
             {/* Subheader Accent Bar and Title */}
             <div className="flex justify-between items-center py-2 border-b border-black/10 w-full">
@@ -1746,17 +1851,15 @@ export default function POSBilling() {
                                 </div>
                                 <div className="max-h-48 overflow-y-auto">
                                   {catalog.filter((c) =>
-                                    c.name
-                                      .toLowerCase()
-                                      .includes(catalogSearch.toLowerCase()),
+                                    normalizeForSearch(c.name).includes(
+                                      normalizeForSearch(catalogSearch),
+                                    ),
                                   ).length > 0 ? (
                                     catalog
                                       .filter((c) =>
-                                        c.name
-                                          .toLowerCase()
-                                          .includes(
-                                            catalogSearch.toLowerCase(),
-                                          ),
+                                        normalizeForSearch(c.name).includes(
+                                          normalizeForSearch(catalogSearch),
+                                        ),
                                       )
                                       .map((catItem) => (
                                         <div
@@ -2156,26 +2259,21 @@ export default function POSBilling() {
                       </div>
                     )}
 
-                    {/* Send Bill Button */}
+                    {/* Complete Sale Button */}
                     <button
-                      onClick={() => handleSendWhatsApp('business')}
-                      className="w-full mt-2 bg-[#10B981] hover:bg-[#059669] text-white py-3 rounded-lg font-bold text-[10px] uppercase tracking-[0.1em] flex items-center justify-center gap-2 transition-transform active:scale-[0.98] shadow-[0_4px_14px_rgba(16,185,129,0.4)] cursor-pointer"
+                      onClick={() => handleCompleteSale()}
+                      disabled={isSubmitting}
+                      className="w-full mt-2 bg-[#10B981] hover:bg-[#059669] disabled:opacity-60 disabled:cursor-not-allowed text-white py-3 rounded-lg font-bold text-[10px] uppercase tracking-[0.1em] flex items-center justify-center gap-2 transition-transform active:scale-[0.98] shadow-[0_4px_14px_rgba(16,185,129,0.4)] cursor-pointer"
                     >
-                      <svg
-                        className="w-3.5 h-3.5"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.012c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-                      </svg>
-                      Send Bill Via WhatsApp
+                      <Check className="w-3.5 h-3.5" />
+                      {isSubmitting ? "Processing..." : "Complete Sale"}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        ))}
 
         {/* Order Details View Modal */}
         {viewingOrder && (
