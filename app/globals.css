@@ -1,11 +1,13 @@
+
+Globals · CSS
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
-
+ 
 body {
   font-family: 'Poppins', sans-serif !important;
   background-color: #ffffff;
 }
-
+ 
 /* Custom scrollbar for a cleaner look */
 ::-webkit-scrollbar {
   width: 6px;
@@ -21,14 +23,14 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-gold);
 }
-
+ 
 @layer utilities {
   /* Minimal input removes default focus rings and uses bottom border */
   .minimal-input {
     @apply w-full bg-transparent border-b border-black/10 py-2 text-text-on-light focus:outline-none focus:border-gold transition-colors placeholder:text-text-muted;
   }
 }
-
+ 
 /* Hide number input spin buttons */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -38,7 +40,7 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-
+ 
 @layer components {
   /* Liquid Glass (Light) */
   .liquid-glass {
@@ -63,7 +65,7 @@ input[type="number"] {
     mask-composite: exclude;
     pointer-events: none;
   }
-
+ 
   /* Liquid Glass (Strong) */
   .liquid-glass-strong {
     background: rgba(255, 255, 255, 0.01);
@@ -87,10 +89,10 @@ input[type="number"] {
     pointer-events: none;
   }
 }
-
+ 
 @theme {
-  --color-bg-dark: #360C24;
-  --color-bg-dark-light: #4A1230;
+  --color-bg-dark: #0A0A0A;
+  --color-bg-dark-light: #1C1C1C;
   --color-bg-light: #FFFFFF;
   --color-bg-light-alt: #FBF7EF;
   --color-gold: #C58E3B;
@@ -99,12 +101,12 @@ input[type="number"] {
   --color-text-on-dark: #F3E5C3;
   --color-text-on-light: #2B2B2B;
   --color-text-muted: #8A7A6A;
-
+ 
   --animate-float: float 3s ease-in-out infinite;
   --animate-swing: swing 2.5s ease-in-out infinite;
   --animate-pop: pop 2s ease-in-out infinite;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-
+ 
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-3px); }
@@ -118,4 +120,4 @@ input[type="number"] {
     50% { transform: scale(1.1); }
   }
 }
-
+ 
