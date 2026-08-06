@@ -1,46 +1,48 @@
-
-Globals · CSS
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
- 
+
 body {
   font-family: 'Poppins', sans-serif !important;
   background-color: #ffffff;
 }
- 
+
 /* Custom scrollbar for a cleaner look */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-gold-dark);
   border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-gold);
 }
- 
+
 @layer utilities {
   /* Minimal input removes default focus rings and uses bottom border */
   .minimal-input {
     @apply w-full bg-transparent border-b border-black/10 py-2 text-text-on-light focus:outline-none focus:border-gold transition-colors placeholder:text-text-muted;
   }
 }
- 
+
 /* Hide number input spin buttons */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
- 
+
 @layer components {
   /* Liquid Glass (Light) */
   .liquid-glass {
@@ -50,22 +52,32 @@ input[type="number"] {
     -webkit-backdrop-filter: blur(16px);
     border: none;
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    position: relative; 
+    position: relative;
     overflow: hidden;
   }
+
   .liquid-glass::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     padding: 1.4px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%, transparent 40%, transparent 60%, rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.15) 20%,
+      transparent 40%,
+      transparent 60%,
+      rgba(255, 255, 255, 0.15) 80%,
+      rgba(255, 255, 255, 0.45) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
- 
+
   /* Liquid Glass (Strong) */
   .liquid-glass-strong {
     background: rgba(255, 255, 255, 0.01);
@@ -73,51 +85,86 @@ input[type="number"] {
     backdrop-filter: blur(50px);
     -webkit-backdrop-filter: blur(50px);
     border: none;
-    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    position: relative; 
+    box-shadow:
+      4px 4px 4px rgba(0, 0, 0, 0.05),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    position: relative;
   }
+
   .liquid-glass-strong::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     padding: 1.4px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 20%, transparent 40%, transparent 60%, rgba(255,255,255,0.2) 80%, rgba(255,255,255,0.5) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.2) 20%,
+      transparent 40%,
+      transparent 60%,
+      rgba(255, 255, 255, 0.2) 80%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
 }
- 
+
 @theme {
-  --color-bg-dark: #0A0A0A;
-  --color-bg-dark-light: #1C1C1C;
-  --color-bg-light: #FFFFFF;
-  --color-bg-light-alt: #FBF7EF;
-  --color-gold: #C58E3B;
-  --color-gold-light: #F5C86B;
-  --color-gold-dark: #955E1B;
-  --color-text-on-dark: #F3E5C3;
-  --color-text-on-light: #2B2B2B;
-  --color-text-muted: #8A7A6A;
- 
+  /* ==========================
+     BLACK + WHITE + GOLD THEME
+     ========================== */
+
+  /* Background Colors */
+  --color-bg-dark: #0f0f0f;          /* Sidebar */
+  --color-bg-dark-light: #1a1a1a;    /* Sidebar hover/cards */
+  --color-bg-light: #ffffff;         /* Main content */
+  --color-bg-light-alt: #f8f8f8;     /* Alternate light sections */
+
+  /* Gold Accent */
+  --color-gold: #c58e3b;
+  --color-gold-light: #f5c86b;
+  --color-gold-dark: #955e1b;
+
+  /* Text Colors */
+  --color-text-on-dark: #f8f8f8;
+  --color-text-on-light: #2b2b2b;
+  --color-text-muted: #8a7a6a;
+
+  /* Animations */
   --animate-float: float 3s ease-in-out infinite;
   --animate-swing: swing 2.5s ease-in-out infinite;
   --animate-pop: pop 2s ease-in-out infinite;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
- 
+
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
   }
+
   @keyframes swing {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
+    0%, 100% {
+      transform: rotate(-5deg);
+    }
+    50% {
+      transform: rotate(5deg);
+    }
   }
+
   @keyframes pop {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
   }
 }
- 
