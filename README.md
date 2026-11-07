@@ -68,7 +68,7 @@ PORT=3000
 # Security
 STAFF_PASSWORD=Staff@123
 ADMIN_PASSWORD=Admin@123
-JWT_SECRET=change_this_to_a_long_random_string
+JWT_SECRET=dstring
 
 # Shop Details
 SHOP_NAME=Magizhrasi
