@@ -472,6 +472,7 @@ export default function POSBilling() {
   const [orderSearchPhone, setOrderSearchPhone] = useState("");
   const [orderFilterSource, setOrderFilterSource] = useState("ALL");
   const [orderFilterStatus, setOrderFilterStatus] = useState("ALL");
+  const [historyVisibleCount, setHistoryVisibleCount] = useState(100);
   const [historyPeriod, setHistoryPeriod] = useState<
     "all" | "today" | "week" | "month" | "year" | "custom"
   >("all");
@@ -481,6 +482,19 @@ export default function POSBilling() {
   const [historyEndDate, setHistoryEndDate] = useState<string>(
     new Date().toISOString().split("T")[0],
   );
+
+  useEffect(() => {
+    setHistoryVisibleCount(100);
+  }, [
+    orderSearchId,
+    orderSearchName,
+    orderSearchPhone,
+    orderFilterSource,
+    orderFilterStatus,
+    historyPeriod,
+    historyStartDate,
+    historyEndDate,
+  ]);
 
   const [selectedCoupon, setSelectedCoupon] = useState<string>("none");
 
@@ -2606,7 +2620,7 @@ export default function POSBilling() {
                           </tr>
                         </thead>
                         <tbody>
-                          {filteredOrders.map((order) => (
+                          {filteredOrders.slice(0, historyVisibleCount).map((order) => (
                             <tr
                               key={order.id}
                               className="border-b border-transparent hover:bg-gold/5 transition-colors">
@@ -2675,6 +2689,19 @@ export default function POSBilling() {
                           ))}
                         </tbody>
                       </table>
+                      <div className="flex flex-col items-center gap-2 p-4 border-t border-black/10">
+                        <p className="text-xs font-semibold text-text-on-light">
+                          Showing {Math.min(historyVisibleCount, filteredOrders.length)} of {filteredOrders.length} bills
+                        </p>
+                        {filteredOrders.length > historyVisibleCount && (
+                          <button
+                            type="button"
+                            onClick={() => setHistoryVisibleCount((c) => c + 100)}
+                            className="px-5 py-2 rounded-lg border-2 border-black/10 text-xs font-bold uppercase tracking-widest hover:bg-gold/10 transition-colors">
+                            Show more
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })()}
